@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Traffic Video Analysis</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px; /* Limit container width for better readability */
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #ccc;
+      border-radius: 20px;
+      padding: 50px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background-color 0.3s;
+      text-align: center; /* Center text within drop-zone */
+    }
+
+    .drop-zone:hover {
+      background-color: #f5f5f5;
+    }
+
+    .drop-zone span {
+      font-size: 18px;
+      color: #666;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+
+    #loading {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Traffic Video Analysis</h1>
+    <p>Upload a video to analyze traffic conditions, driving behavior, and potential hazards.</p>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="drop-zone">
+        <span>Drag and drop a video here or </span><br>
+        <label for="file-input" class="btn btn-primary">Browse</label>
+        <input type="file" id="file-input" name="file" class="file-input">
+      </div>
+      <input type="submit" value="Analyze" class="btn btn-success">
+    </form>
+
+    <div id="loading" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Analyzing video...</p>
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.querySelector('.drop-zone');
+    const fileInput = document.querySelector('#file-input');
+    const form = document.querySelector('form');
+    const loadingDiv = document.getElementById('loading');
+
+    // ... (drag and drop event listeners from before) ...
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      loadingDiv.style.display = 'block';
+
+      // Create a FormData object to send the file
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      // Use fetch to send the data to the Flask server
+      fetch('/', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          // Handle the response from the server (e.g., redirect)
+          if (response.ok) {
+            window.location.href = response.url; // Redirect to the result page
+          } else {
+            // Handle errors
+            console.error('Error uploading video:', response.status);
+            loadingDiv.style.display = 'none'; // Hide loading animation
+          }
+        })
+        .catch(error => {
+          console.error('Error uploading video:', error);
+          loadingDiv.style.display = 'none'; // Hide loading animation
+        });
+    });
+  </script>
+</body>
+</html>
+
